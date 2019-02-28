@@ -9,14 +9,21 @@ import android.widget.Toast;
 public class MyService extends Service {
 
     private final static int MODE = Service.START_NOT_STICKY;
-    private LocalBinder binder = new LocalBinder();
+    private MyBinder binder = new MyBinder();
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                toast();
+            }
+        });
+
         return MODE;
     }
 
-    public class LocalBinder extends Binder {
+    class MyBinder extends Binder {
         public MyService getService() {
             return MyService.this;
         }
