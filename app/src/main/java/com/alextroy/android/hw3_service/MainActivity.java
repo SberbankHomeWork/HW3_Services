@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -26,18 +27,18 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initListeners() {
+        startService.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(v.getContext(), MyService.class);
+                startService(intent);
+            }
+        });
+
         startSecondAct.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 startActivity(SecondActivity.newIntent(MainActivity.this));
-            }
-        });
-
-        startService.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getApplicationContext(), MyService.class);
-                startService(intent);
             }
         });
     }

@@ -1,20 +1,25 @@
 package com.alextroy.android.hw3_service;
 
 import android.app.Service;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Binder;
 import android.os.IBinder;
+import android.widget.Toast;
 
 public class MyService extends Service {
 
     private final static int MODE = Service.START_NOT_STICKY;
-
-    private IBinder binder = new LocalBinder();
+    private LocalBinder binder = new LocalBinder();
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         return MODE;
+    }
+
+    public class LocalBinder extends Binder {
+        public MyService getService() {
+            return MyService.this;
+        }
     }
 
     @Override
@@ -22,15 +27,7 @@ public class MyService extends Service {
         return binder;
     }
 
-    public class LocalBinder extends Binder {
-        MyService getService() {
-            return MyService.this;
-        }
+    public void toast() {
+        Toast.makeText(this, "Toast from Service", Toast.LENGTH_SHORT).show();
     }
-
-    public static Intent newIntent(Context context) {
-        return new Intent(context, MyService.class);
-    }
-
-
 }

@@ -7,45 +7,50 @@ import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 
-public class SecondActivity extends AppCompatActivity {
+public class SecondActivity extends AppCompatActivity implements ServiceConnection {
+
+    private MyService service;
+    private boolean isConnected;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        bindService();
-    }
+        setContentView(R.layout.activity_second);
 
-    @Override
-    protected void onPause() {
-        super.onPause();
-        unBindService();
+        if (isConnected) {
+            service.toast();
+        }
     }
 
     public static Intent newIntent(Context context) {
         return new Intent(context, SecondActivity.class);
     }
 
-    public void bindService() {
-        bindService(MyService.newIntent(SecondActivity.this), serviceConnection, Context.BIND_AUTO_CREATE);
+    @Override
+    public void onServiceConnected(ComponentName name, IBinder service) {
+        isConnected = true;
+        this.service = ((MyService.LocalBinder) service).getService();
     }
 
-    public void unBindService() {
-        unbindService(serviceConnection);
+    @Override
+    public void onServiceDisconnected(ComponentName name) {
+        isConnected = false;
+        this.service = null;
     }
 
-    private ServiceConnection serviceConnection = new ServiceConnection() {
-        @Override
-        public void onServiceConnected(ComponentName name, IBinder service) {
-            MyService boundService = ((MyService.LocalBinder) service).getService();
-            Log.v("SecondAct", "connected");
-        }
+    @Override
+    protected void onStart() {
+        super.onStart();
+        Intent intent = new Intent(this, MyService.class);
+        bindService(intent, this, Context.BIND_AUTO_CREATE);
+    }
 
-        @Override
-        public void onServiceDisconnected(ComponentName name) {
-            Log.v("SecondAct", "disconnected");
-        }
-    };
+    @Override
+    public void onStop() {
+        super.onStop();
+        unbindService(this);
+        this.service = null;
+        isConnected = false;
+    }
 }
